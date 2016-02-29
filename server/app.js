@@ -15,7 +15,7 @@ server.start(err => {
 
 server.route({
   method : 'GET',
-  path : '/ouathcallback',
+  path : '/oauthcallback',
   handler : (request, reply) => {
     reply(200);
     console.log(request);

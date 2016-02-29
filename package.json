@@ -12,6 +12,7 @@
     "eslint": "^2.2.0"
   },
   "dependencies": {
+    "googleapis": "^2.1.7",
     "hapi": "^13.0.0"
   }
 }
