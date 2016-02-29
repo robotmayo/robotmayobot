@@ -5,7 +5,7 @@ const google = require('googleapis');
 const Youtube = google.youtube('v3');
 const OAuth2 = google.auth.OAuth2;
 const server = new Hapi.Server();
-const fetch = require('fetch');
+const fetch = require('node-fetch');
 const redirectUri = 'http://' + config.host + ':' + config.port + '/oauthcallback';
 const oAuth2Client = new OAuth2(
   config.clientId,
