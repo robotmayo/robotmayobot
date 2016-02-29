@@ -5,8 +5,8 @@ const google = require('googleapis');
 const Youtube = google.youtube('v3');
 const OAuth2 = google.auth.OAuth2;
 const server = new Hapi.Server();
-
-server.connection({port : 8080});
+const oAuth2Client = new OAuth2(config.clientId, config.clientSecret, 'http://' + config.host + ':' + config.port + '/oauthcallback');
+server.connection({port : 8080, host : config.host });
 
 server.start(err => {
   if(err) throw err;
@@ -17,6 +17,10 @@ server.route({
   method : 'GET',
   path : '/oauthcallback',
   handler : (request, reply) => {
+    oAuth2Client.getToken(config.accessToken, (err, tokens) => {
+      if(err) throw err;
+      console.log(tokens);
+    });
     reply(200);
     console.log(request);
     console.log(request.query);
@@ -27,12 +31,10 @@ server.route({
   method : 'GET',
   path : '/',
   handler : (request, reply) => {
-    const oAuth2Client = new OAuth2(config.clientId, config.clientSecret, server.info.uri + '/oauthcallback');
     const url = oAuth2Client.generateAuthUrl({
       access_type : 'offline',
       scope : 'https://www.googleapis.com/auth/youtube'
     });
-    console.log(server.info.uri)
     reply(`SOME URL\n <a href=${url}>OAUTH URL</a>`);
   }
 })
