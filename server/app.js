@@ -5,7 +5,12 @@ const google = require('googleapis');
 const Youtube = google.youtube('v3');
 const OAuth2 = google.auth.OAuth2;
 const server = new Hapi.Server();
-const oAuth2Client = new OAuth2(config.clientId, config.clientSecret, 'http://' + config.host + ':' + config.port + '/oauthcallback');
+const oAuth2Client = new OAuth2(
+  config.clientId,
+  config.clientSecret,
+  'http://' + config.host + ':' + config.port + '/oauthcallback',
+  {tokenUrl : 'http://www.googleapis.com/oauth2/v3/token'}
+);
 server.connection({port : 8080, host : config.host });
 
 server.start(err => {
