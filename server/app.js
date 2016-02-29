@@ -34,15 +34,9 @@ server.route({
   method : 'GET',
   path : '/oauthcallback',
   handler : (request, reply) => {
-    getThisFuckingToken(request.query.code)
-    .then(res =>{
-      return res.json();
-    })
-    .then(json => {
-      console.log(json);
-    })
-    .catch(err => {
+    oAuth2Client.getToken(request.query.code, function(err, tokens){
       console.log(err);
+      console.log(tokens);
     })
     reply(200);
     console.log(request);
