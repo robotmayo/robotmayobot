@@ -5,13 +5,25 @@ const google = require('googleapis');
 const Youtube = google.youtube('v3');
 const OAuth2 = google.auth.OAuth2;
 const server = new Hapi.Server();
+const fetch = require('fetch');
+const redirectUri = 'http://' + config.host + ':' + config.port + '/oauthcallback';
 const oAuth2Client = new OAuth2(
   config.clientId,
   config.clientSecret,
-  'http://' + config.host + ':' + config.port + '/oauthcallback',
-  {tokenUrl : 'http://www.googleapis.com/oauth2/v3/token'}
+  redirectUri
 );
 server.connection({port : 8080, host : config.host });
+
+const getThisFuckingToken = function(code){
+  const query = require('querystring').stringify({
+    code : code,
+    redirect_uri : redirectUri,
+    client_id : config.clientId,
+    clientSecret : config.clientSecret,
+    grant_type : 'authorization_code'
+  })
+  return fetch('http://www.googleapis.com/oauth2/v3/token', {method : 'post', body : query})
+}
 
 server.start(err => {
   if(err) throw err;
@@ -22,10 +34,16 @@ server.route({
   method : 'GET',
   path : '/oauthcallback',
   handler : (request, reply) => {
-    oAuth2Client.getToken(config.accessToken, (err, tokens) => {
-      if(err) throw err;
-      console.log(tokens);
-    });
+    getThisFuckingToken(request.query.code)
+    .then(res =>{
+      return res.json();
+    })
+    .then(json => {
+      console.log(json);
+    })
+    .catch(err => {
+      console.log(err);
+    })
     reply(200);
     console.log(request);
     console.log(request.query);
